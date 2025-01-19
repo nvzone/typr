@@ -2,6 +2,7 @@ local dashboard = require "typr.stats.dashboard"
 local keystrokes = require "typr.stats.keystrokes"
 local voltui = require "volt.ui"
 local state = require "typr.state"
+local history = require "typr.stats.history"
 
 local empty_line = {
   lines = function()
@@ -13,7 +14,7 @@ local empty_line = {
 local components = {
   ["  Dashboard"] = dashboard,
   Keystrokes = keystrokes,
-  ["  History"] = keystrokes,
+  ["  History"] = history,
 }
 
 return {

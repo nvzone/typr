@@ -101,8 +101,8 @@ local emptychad = function(w)
   local tb = {
     {
       "Total",
-      { "  Correct", "exgreen" },
-      { "  Wrong", "exred" },
+      { { "  Correct", "exgreen" } },
+      { { "  Wrong", "exred" } },
       "Avg",
     },
 
@@ -115,8 +115,8 @@ local emptychad = function(w)
   local tb2 = {
     {
       "Total",
-      { "  Correct", "exgreen" },
-      { "  Wrong", "exred" },
+      { { "  Correct", "exgreen" } },
+      { { "  Wrong", "exred" } },
       "Avg",
     },
 
@@ -190,14 +190,14 @@ local char_times = function()
   table.insert(tb1, 1, { "Key", "Avg" })
 
   tb1 = vim.tbl_map(function(x)
-    return { { x[1], "exred" }, x[2] }
+    return { {{ x[1], "exred" }}, x[2] }
   end, tb1)
 
   local tb2 = slice_tb(list, #list, #list - 4)
   table.insert(tb2, 1, { "Key", "Avg" })
 
   tb2 = vim.tbl_map(function(x)
-    return { { x[1], "exblue" }, x[2] }
+    return { {{ x[1], "exblue" }}, x[2] }
   end, tb2)
 
   local slowest_keys_ui = voltui.table(tb1, "fit", "normal", { "Slowest keys" })

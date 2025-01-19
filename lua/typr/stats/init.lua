@@ -29,12 +29,11 @@ M.open = function()
 
   state.h = voltstate[state.statsbuf].h
 
-  local winh = vim.o.lines - 8
-  local is_largeheight = state.h < vim.o.lines
-  local h = is_largeheight and state.h or winh
+  local  large_screen = state.h + 10 < vim.o.lines
+  local h = large_screen and state.h or vim.o.lines - 7
 
   state.win = api.nvim_open_win(state.statsbuf, true, {
-    row = is_largeheight and ((vim.o.lines / 2) - (state.h / 2) - 2) or 2,
+    row = large_screen and ((vim.o.lines / 2) - (state.h / 2)) or 2,
     col = (vim.o.columns / 2) - (state.w / 2),
     width = state.w,
     height = h,
