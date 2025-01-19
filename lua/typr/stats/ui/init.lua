@@ -35,8 +35,13 @@ local function get_lvlstats(my_secs, wpm_ratio)
   }
 end
 
+M.tabs = function()
+  local data = { "  Dashboard", "Keystrokes", "_pad_", "  History" }
+  return voltui.tabs(data, state.w_with_pad, { active = state.tab})
+end
+
 M.progress = function()
-  local barlen = state.w_with_pad / 3 - 2
+  local barlen = state.w_with_pad / 3 - 1
   local wpm_progress = (tmp_stats.wpm.avg / config.wpm_goal) * 100
 
   local wpm_stats = {
@@ -99,7 +104,7 @@ M.tabular_stats = function()
     },
   }
 
-  return voltui.table(tb, state.w_with_pad - 2)
+  return voltui.table(tb, state.w_with_pad)
 end
 
 M.graph = function()
@@ -245,7 +250,7 @@ M.emptychad = function(w)
     {
       "Total",
       { "  Correct", "exgreen" },
-      { "Wrong", "exred" },
+      { "  Wrong", "exred" },
       "Avg",
     },
 
@@ -259,7 +264,7 @@ M.emptychad = function(w)
     {
       "Total",
       { "  Correct", "exgreen" },
-      { "Wrong", "exred" },
+      { "  Wrong", "exred" },
       "Avg",
     },
 
@@ -348,7 +353,7 @@ M.char_times = function()
 
   local w1 = voltui.line_w(slowest_keys_ui[1])
   local w2 = voltui.line_w(fastest_keys_ui[1])
-  local w3 = state.w_with_pad - w1 - w2 - 10
+  local w3 = state.w_with_pad - w1 - w2 - 4
 
   return voltui.grid_col {
     { lines = slowest_keys_ui, pad = 2, w = w1 },
@@ -414,6 +419,7 @@ M.activity_heatmap = function()
 
   table.insert(header, { " More" })
   table.insert(lines, 1, voltui.hpad(header, 80))
+
 
   return lines
 end

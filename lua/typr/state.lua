@@ -11,6 +11,7 @@ local M = {
   timer = vim.uv.new_timer(),
   secs = 0,
   months_toggled = false,
+  tab = "  Dashboard",
 
   config = {
     kblayout = "qwerty",
