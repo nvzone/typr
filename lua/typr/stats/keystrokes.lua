@@ -17,154 +17,6 @@ local tmp_stats = {
   accuracy = 60,
 }
 
-local function secsTodhm(secs)
-  local days = math.floor(secs / 86400)
-  local hours = math.floor((secs % 86400) / 3600)
-  local minutes = math.floor((secs % 3600) / 60)
-  return string.format("%02d:%02d:%02d", days, hours, minutes)
-end
-
-local function get_lvlstats(my_secs, wpm_ratio)
-  local level = math.floor(my_secs / 1000)
-  local next_lvl = (level + 1) * 1000
-  local next_perc = math.floor(((my_secs + wpm_ratio) / next_lvl) * 100)
-
-  return {
-    val = level,
-    next_perc = 100 - next_perc,
-  }
-end
-
-M.tabs = function()
-  local data = { "  Dashboard", "Keystrokes", "_pad_", "  History" }
-  return voltui.tabs(data, state.w_with_pad, { active = state.tab})
-end
-
-M.progress = function()
-  local barlen = state.w_with_pad / 3 - 1
-  local wpm_progress = (tmp_stats.wpm.avg / config.wpm_goal) * 100
-
-  local wpm_stats = {
-    { { "", "exgreen" }, { "  WPM ~ " }, { tostring(tmp_stats.wpm.avg) .. " / " .. tostring(config.wpm_goal) } },
-    {},
-    voltui.progressbar {
-      w = barlen,
-      val = wpm_progress > 100 and 100 or wpm_progress,
-      icon = { on = "┃", off = "┃" },
-      hl = { on = "exgreen", off = "linenr" },
-    },
-  }
-
-  local accuracy_stats = {
-    { { "", "exred" }, { "  Accuracy ~ " }, { tostring(tmp_stats.accuracy) .. " %" } },
-    {},
-    voltui.progressbar {
-      w = barlen,
-      val = tmp_stats.accuracy,
-      icon = { on = "┃", off = "┃" },
-    },
-  }
-
-  local lvl_stats = get_lvlstats(tmp_stats.total_secs, tmp_stats.accuracy)
-
-  local lvl_stats_ui = {
-    { { "", "exyellow" }, { "  Level ~ " }, { tostring(lvl_stats.val) } },
-    {},
-    voltui.progressbar {
-      w = barlen,
-      val = lvl_stats.next_perc,
-      hl = { on = "exyellow" },
-      icon = { on = "┃", off = "┃" },
-    },
-  }
-
-  return voltui.grid_col {
-    { lines = wpm_stats, w = barlen, pad = 2 },
-    { lines = accuracy_stats, w = barlen, pad = 2 },
-    { lines = lvl_stats_ui, w = barlen },
-  }
-end
-
-M.tabular_stats = function()
-  local tb = {
-    {
-      "  Total time",
-      "  Tests",
-      "  Lowest",
-      "  Highest",
-      " RAW WPM",
-    },
-
-    {
-      secsTodhm(tmp_stats.total_secs),
-      "2100",
-      "60 WPM",
-      "120 WPM",
-      "150 WPM",
-    },
-  }
-
-  return voltui.table(tb, state.w_with_pad)
-end
-
-M.graph = function()
-  local wpm_graph_data = {
-    val = { 60, 20, 80, 70, 30, 10, 30, 50, 20, 40 },
-    footer_label = { " Last 10 WPM stats" },
-
-    format_labels = function(x)
-      return tostring((x / 100) * 150)
-    end,
-
-    baropts = {
-      w = 2,
-      gap = 1,
-      hl = "exgreen",
-      dual_hl = { "exlightgrey", "commentfg" },
-      -- format_hl = function(x)
-      --   return x > 50 and "exred" or "normal"
-      -- end,
-    },
-    w = state.w_with_pad / 2,
-  }
-
-  local accuracy_graph_data = {
-    val = { 60, 20, 80, 70, 30, 10, 30, 50, 20, 40 },
-    w = state.w_with_pad / 2,
-    footer_label = { "Last 10 Accuracy stats" },
-  }
-
-  return voltui.grid_col {
-    { lines = voltui.graphs.bar(wpm_graph_data), w = (state.w_with_pad - 1) / 2, pad = 0 },
-    { lines = voltui.graphs.dot(accuracy_graph_data), w = (state.w_with_pad - 1) / 2, pad = 0 },
-  }
-end
-
-M.rawpm = function()
-  local m = { 60, 20, 80, 70, 30, 20, 80, 70, 30, 80, 70, 30, 50 }
-  local n = { 60, 20, 80, 70, 30, 20, 80, 70, 30, 80, 70, unpack(m) }
-
-  local wpm_graph_data = {
-    val = { 60, 20, 80, 70, 30, 10, 30, 50, 20, 40, unpack(n) },
-    footer_label = { " Last 20 RAW WPM stats" },
-
-    format_labels = function(x)
-      return tostring((x / 100) * 150)
-    end,
-
-    baropts = {
-      w = 1,
-      gap = 1,
-      format_hl = function(x)
-        return x > 30 and "exred" or "normal"
-      end,
-    },
-    w = state.w_with_pad / 2,
-  }
-
-  return voltui.graphs.bar(wpm_graph_data)
-end
-
 local border_chars = {
   mid = { top = "┬", bot = "┴", none = "┼" },
   corners_left = { top = "┌", bot = "└", none = "├" },
@@ -172,7 +24,7 @@ local border_chars = {
   vline = "│",
 }
 
-M.keys_accuracy = function()
+local keys_accuracy = function()
   local x = stats.val.char_accuracy
   local lines = {}
   local line = string.rep("─", (10 * 4) + 1)
@@ -240,7 +92,7 @@ local slice_tb = function(tb, start, stop)
   return result
 end
 
-M.emptychad = function(w)
+local emptychad = function(w)
   local words = stats.val.word_stats
   local keys = stats.val.char_stats
   local wordavg = ((words.all - words.wrong) / words.all) * 100
@@ -296,7 +148,7 @@ M.emptychad = function(w)
   }
 end
 
-M.char_times = function()
+local char_times = function()
   local char_times = stats.val.char_times
   --
   -- if #char_times == 0 then
@@ -358,11 +210,11 @@ M.char_times = function()
   return voltui.grid_col {
     { lines = slowest_keys_ui, pad = 2, w = w1 },
     { lines = fastest_keys_ui, pad = 2, w = w2 },
-    { lines = M.emptychad(w3), pad = 2, w = w3 },
+    { lines = emptychad(w3), pad = 2, w = w3 },
   }
 end
 
-M.activity_heatmap = function()
+local activity_heatmap = function()
   local months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }
   local days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" }
   local hlgroups = { "linenr", "typrgreen3", "typrgreen2", "typrgreen1", "typrgreen0" }
@@ -420,8 +272,15 @@ M.activity_heatmap = function()
   table.insert(header, { " More" })
   table.insert(lines, 1, voltui.hpad(header, 80))
 
-
   return lines
 end
 
-return M
+return function()
+  return require("volt.ui").grid_row {
+    keys_accuracy(),
+    { {} },
+    char_times(),
+    { {} },
+    activity_heatmap(),
+  }
+end

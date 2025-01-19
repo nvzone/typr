@@ -1,5 +1,6 @@
-local ui = require "typr.stats.ui"
-local volt_ui = require "volt.ui"
+local dashboard = require "typr.stats.dashboard"
+local keystrokes = require "typr.stats.keystrokes"
+local voltui = require "volt.ui"
 local state = require "typr.state"
 
 local empty_line = {
@@ -9,29 +10,6 @@ local empty_line = {
   name = "emptyline",
 }
 
-local dashboard = function()
-  return volt_ui.grid_row {
-    ui.progress(),
-    { {} },
-    ui.tabular_stats(),
-    { {} },
-    ui.graph(),
-    { {} },
-    ui.rawpm(),
-    { {} },
-  }
-end
-
-local keystrokes = function()
-  return volt_ui.grid_row {
-    ui.keys_accuracy(),
-    { {} },
-    ui.char_times(),
-    { {} },
-    ui.activity_heatmap(),
-  }
-end
-
 local components = {
   ["  Dashboard"] = dashboard,
   Keystrokes = keystrokes,
@@ -39,7 +17,13 @@ local components = {
 }
 
 return {
-  { lines = ui.tabs, name = "tabs" },
+  {
+    lines = function()
+      local data = { "  Dashboard", "Keystrokes", "_pad_", "  History" }
+      return voltui.tabs(data, state.w_with_pad, { active = state.tab })
+    end,
+    name = "tabs",
+  },
 
   empty_line,
 
