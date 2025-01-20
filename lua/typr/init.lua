@@ -22,11 +22,6 @@ M.open = function()
 
   state.buf = api.nvim_create_buf(false, true)
 
-	-- Enter insert mode if state.insert_on_start is true
-	if state.insert_on_start then
-		vim.api.nvim_command("startinsert")
-	end
-
   local dim_buf = api.nvim_create_buf(false, true)
   local dim_win = api.nvim_open_win(dim_buf, false, {
     focusable = false,
@@ -70,6 +65,10 @@ M.open = function()
     w = state.w_with_pad,
     custom_empty_lines = utils.set_emptylines,
   })
+
+	if state.config.insert_on_start then
+		vim.api.nvim_command("startinsert")
+	end
 
   require("volt.events").add(state.buf)
 
