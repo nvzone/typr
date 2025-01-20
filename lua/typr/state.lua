@@ -19,6 +19,7 @@ local M = {
     numbers = false,
     punctuation = false,
     random = false,
+		insert_on_start = false,
     stats_filepath = vim.fn.stdpath "config" .. "/typrstats",
   },
 
