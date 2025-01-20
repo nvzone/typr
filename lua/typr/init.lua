@@ -22,6 +22,9 @@ M.open = function()
 
   state.buf = api.nvim_create_buf(false, true)
 
+	-- Enter insert mode
+	vim.api.nvim_command("startinsert")
+
   local dim_buf = api.nvim_create_buf(false, true)
   local dim_win = api.nvim_open_win(dim_buf, false, {
     focusable = false,
