@@ -22,8 +22,10 @@ M.open = function()
 
   state.buf = api.nvim_create_buf(false, true)
 
-	-- Enter insert mode
-	vim.api.nvim_command("startinsert")
+	-- Enter insert mode if state.insert_on_start is true
+	if state.insert_on_start then
+		vim.api.nvim_command("startinsert")
+	end
 
   local dim_buf = api.nvim_create_buf(false, true)
   local dim_win = api.nvim_open_win(dim_buf, false, {
