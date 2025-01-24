@@ -1,6 +1,7 @@
 local M = {}
 local state = require "typr.state"
 local words = require "typr.constants.words"
+local words_ptbr = require "typr.constants.words_pt-br"
 local volt = require "volt"
 
 local symbols = {
@@ -26,11 +27,12 @@ M.gen_word = function()
   local word
   local frequency = math.random(1, 4)
   local config = state.config
+  local word_list = config.language == "en" and words or words_ptbr
 
   if frequency == 4 and state.config.numbers then
     word = tostring(math.random(1, 1000))
   else
-    word = config.random and gen_random_word() or words[math.random(1, #words)]
+    word = config.random and gen_random_word() or word_list[math.random(1, #word_list)]
   end
 
   if(state.config.symbols) then

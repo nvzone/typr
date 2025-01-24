@@ -35,6 +35,10 @@ return function()
   map("n", "n", myapi.toggle_numbers, { buffer = state.buf })
   map("n", "r", myapi.toggle_random, { buffer = state.buf })
 
+  map("n", "l", function()
+    myapi.toggle_language()
+  end, { buffer = state.buf })
+
   for _, v in ipairs { 3, 6, 9 } do
     map("n", tostring(v), function()
       myapi.set_linecount(v)
