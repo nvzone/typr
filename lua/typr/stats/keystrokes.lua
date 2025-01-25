@@ -24,7 +24,7 @@ local keys_accuracy = function()
     return a[2] < b[2]
   end)
 
-  local kblayout = kblayouts[config.kblayout] or {}
+  local kblayout = type(config.kblayout) == "table" and config.kblayout or kblayouts[config.kblayout]
 
   for i, v in ipairs(kblayout) do
     local row = {}
