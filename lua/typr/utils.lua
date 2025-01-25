@@ -56,7 +56,8 @@ M.gen_word = function()
   local word
   local frequency = math.random(1, 4)
   local config = state.config.mode_config.words
-  local words = require("typr.dictionaries." .. state.config.mode)
+  local words = type(config.dictionary) == "table" and config.dictionary
+    or require("typr.dictionaries." .. config.dictionary)
 
   if frequency == 4 and state.config.numbers then
     word = tostring(math.random(1, 1000))
@@ -100,8 +101,8 @@ M.words_to_lines = function()
 end
 
 M.gen_sentence = function()
-  local mode = state.config.mode
-  local sentences = require("typr.dictionaries." .. mode)
+  local dictionary = state.config.mode_config.sentences.dictionary
+  local sentences = type(dictionary) == "table" and dictionary or require("typr.dictionaries." .. dictionary)
   local sentence = sentences[math.random(1, #sentences)]
   return sentence
 end

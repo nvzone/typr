@@ -34,6 +34,10 @@ local M = {
         symbols = false,
         random = false,
         line_count = 1,
+        dictionary = CONSTANTS.MODES.Words,
+      },
+      sentences = {
+        dictionary = CONSTANTS.MODES.Sentences,
       },
     },
     insert_on_start = false,
