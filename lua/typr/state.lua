@@ -1,10 +1,12 @@
+local CONSTANTS = require "typr.constants.consts"
+
 local M = {
   ns = vim.api.nvim_create_namespace "Typr",
   xpad = 2,
   w = 80,
   h = 20,
-  linecount = 1,
-  default_lines = {},
+  line_count = 1,
+  lines = {},
   ui_lines = {},
   lastchar = nil,
   words_row = 4,
@@ -24,9 +26,19 @@ local M = {
     winlayout = "responsive",
     kblayout = "qwerty",
     wpm_goal = 120,
-    numbers = false,
-    symbols = false,
-    random = false,
+    mode = CONSTANTS.MODES.Words,
+    mode_config = {
+      words = {
+        numbers = false,
+        symbols = false,
+        random = false,
+        line_count = 1,
+        dictionary = CONSTANTS.DICTIONARIES.Words,
+      },
+      sentences = {
+        dictionary = CONSTANTS.DICTIONARIES.Monkeytype,
+      },
+    },
     insert_on_start = false,
     stats_filepath = vim.fn.stdpath "data" .. "/typrstats",
     mappings = nil,

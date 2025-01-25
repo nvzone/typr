@@ -36,7 +36,7 @@ M.open = function()
 
   vim.wo[dim_win].winblend = 20
 
-  utils.gen_default_lines()
+  utils.gen_lines()
 
   M.initialize_volt()
 
@@ -95,7 +95,7 @@ M.open = function()
 
       local curline = api.nvim_get_current_line():sub(3)
       local words_row = line - state.words_row + 1
-      local default_line = state.default_lines[words_row]
+      local default_line = state.lines[words_row]
 
       state.ui_lines[words_row] = utils.gen_lines_diff(default_line, curline)
 

@@ -39,10 +39,15 @@ end
 M.save_str_tofile = function(tb)
   local str = "'" .. vim.json.encode(tb) .. "'"
 
-  local data = "return string.dump(function()return" .. str .. "end, true)"
   local path = state.config.stats_filepath
   local file = io.open(path, "wb")
-  file:write(loadstring(data)())
+  if not file then
+    return
+  end
+
+  file:write(string.dump(function()
+    return str
+  end, true))
   file:close()
 end
 
@@ -50,12 +55,12 @@ M.restore_stats = function()
   local path = state.config.stats_filepath
   local ok, stats = pcall(dofile, path)
 
-  if ok then
+  if ok and stats then
     state.data = vim.json.decode(stats)
   else
     local oldfile = vim.fn.stdpath "config" .. "/typrstats"
-    local ok2, oldata = pcall(dofile, oldfile)
-    state.data = ok2 and vim.json.decode(oldata) or M.gen_default_stats()
+    ok, stats = pcall(dofile, oldfile)
+    state.data = (ok and stats) and vim.json.decode(stats) or M.gen_default_stats()
     M.save_str_tofile(state.data)
   end
 end

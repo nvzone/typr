@@ -1,7 +1,7 @@
 local M = {}
 local state = require "typr.state"
-local words = require "typr.constants.words"
 local volt = require "volt"
+local CONSTANTS = require "typr.constants.consts"
 
 local symbols = {
   "!",
@@ -55,7 +55,8 @@ end
 M.gen_word = function()
   local word
   local frequency = math.random(1, 4)
-  local config = state.config
+  local config = state.config.mode_config.words
+  local words = require("typr.dictionaries." .. config.dictionary)
 
   if frequency == 4 and state.config.numbers then
     word = tostring(math.random(1, 1000))
@@ -63,7 +64,7 @@ M.gen_word = function()
     word = config.random and gen_random_word() or words[math.random(1, #words)]
   end
 
-  if state.config.symbols then
+  if config.symbols then
     local tmp_i = math.random(0, punct_symbolslen)
     local symbol = tmp_i > 0 and symbols[tmp_i] or ""
     word = word .. symbol
@@ -74,32 +75,88 @@ end
 
 M.words_to_lines = function()
   local lines = {}
+  local line_count = state.config.mode_config.words.line_count
   local maxw = state.w_with_pad
 
-  for _ = 1, state.linecount do
-    local lineWords = {}
-    local lineLength = 0
+  state.line_count = line_count
 
-    while lineLength < maxw do
+  for _ = 1, line_count do
+    local line_words = {}
+    local line_length = 0
+
+    while line_length < maxw do
       local word = M.gen_word()
-      if lineLength + #word + 1 > maxw then
+      if line_length + #word + 1 > maxw then
         break
       end
-      table.insert(lineWords, word)
-      lineLength = lineLength + #word + 1 -- +1 for the space
+      table.insert(line_words, word)
+      line_length = line_length + #word + 1 -- +1 for the space
     end
 
-    table.insert(lines, table.concat(lineWords, " "))
+    table.insert(lines, table.concat(line_words, " "))
   end
 
   return lines
 end
 
-M.gen_default_lines = function()
-  state.default_lines = M.words_to_lines()
+M.gen_sentence = function()
+  local config = state.config.mode_config.sentences
+  local sentences = require("typr.dictionaries." .. config.dictionary)
+  local sentence = sentences[math.random(1, #sentences)]
+  return sentence
+end
+
+M.sentence_to_lines = function()
+  local lines = {}
+  local maxw = state.w_with_pad
+
+  local sentence = M.gen_sentence()
+  local line_words = {}
+  local line_length = 0
+
+  for _, word in ipairs(vim.split(sentence, "%s", { trimempty = true })) do
+    local word_length = #word
+
+    -- Typr goes to the next line
+    -- 1 character before the end of the line,
+    -- so increasing the word length by 1
+    -- is to make sure there is no
+    -- single character letter placed at the
+    -- end of the line.
+    if word_length == 1 then
+      word_length = word_length + 1
+    end
+
+    if line_length + word_length + 1 >= maxw then
+      table.insert(lines, table.concat(line_words, " "))
+      line_words = {}
+      line_length = 0
+    end
+
+    table.insert(line_words, word)
+    line_length = line_length + #word + 1 -- +1 for the space
+  end
+
+  if #line_words > 0 then
+    table.insert(lines, table.concat(line_words, " "))
+  end
+
+  state.line_count = #lines
+
+  return lines
+end
+
+M.gen_lines = function()
+  local line_gen_mapping = {
+    [CONSTANTS.MODES.Words] = M.words_to_lines,
+    [CONSTANTS.MODES.Sentences] = M.sentence_to_lines,
+  }
+
+  local line_generator = line_gen_mapping[state.config.mode]
+  state.lines = line_generator()
   local ui_lines = {}
 
-  for _, v in ipairs(state.default_lines) do
+  for _, v in ipairs(state.lines) do
     local line = {}
     for word in string.gmatch(v, "%S+") do
       table.insert(line, { word .. " ", "commentfg" })
@@ -156,7 +213,7 @@ M.count_correct_words = function()
     table.insert(userlines, vim.split(strs, " "))
   end
 
-  for _, line in ipairs(state.default_lines) do
+  for _, line in ipairs(state.lines) do
     table.insert(default_lines, vim.split(line, " "))
   end
 
@@ -190,7 +247,7 @@ M.get_accuracy = function()
   end
 
   local mystrlen = #mystr:gsub("%s+", "")
-  local default_words = #table.concat(state.default_lines):gsub("%s+", "")
+  local default_words = #table.concat(state.lines):gsub("%s+", "")
   local accuracy = (mystrlen / default_words) * 100
 
   state.stats.accuracy = math.floor(accuracy)
@@ -211,7 +268,7 @@ M.char_accuracy = function()
 
   local default_lines = vim.tbl_map(function(line)
     return vim.split(line, "")
-  end, state.default_lines)
+  end, state.lines)
 
   local wrongchars = {}
   local wrongchars_count = 0
@@ -273,7 +330,7 @@ M.start_timer = function()
 end
 
 M.set_emptylines = function()
-  local maxline = (state.linecount + state.words_row)
+  local maxline = (state.line_count + state.words_row)
   state.words_row_end = maxline
 
   local lines = {}

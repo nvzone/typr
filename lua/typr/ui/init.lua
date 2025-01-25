@@ -1,27 +1,46 @@
 local M = {}
 local state = require "typr.state"
 local voltui = require "volt.ui"
+local CONSTANTS = require "typr.constants.consts"
 
 M.words = function()
   return state.ui_lines
 end
 
 M.headerbtns = function()
-  local config = state.config
+  local mode = state.config.mode
+  local mode_config = state.config.mode_config
 
-  local line = {
-    { "  Symbols ", config.symbols and "exgreen" or "normal" },
-    { "   Numbers ", config.numbers and "exgreen" or "normal" },
-    { "   Random ", config.random and "exgreen" or "normal" },
-    { "_pad_" },
-    { "  Lines ", "exred" },
-    { " 3 *", state.linecount == 3 and "" or "commentfg" },
-    { " 6 *", state.linecount == 6 and "" or "commentfg" },
-    { " 9", state.linecount == 9 and "" or "commentfg" },
+  local headerbtns = {
+
+    [CONSTANTS.MODES.Words] = {
+      { "  Symbols ", mode_config.words.symbols and "exgreen" or "normal" },
+      { "   Numbers ", mode_config.words.numbers and "exgreen" or "normal" },
+      { "   Random ", mode_config.words.random and "exgreen" or "normal" },
+      { "_pad_" },
+      { "  Lines ", "exred" },
+      { " 3 *", mode_config.words.line_count == 3 and "" or "commentfg" },
+      { " 6 *", mode_config.words.line_count == 6 and "" or "commentfg" },
+      { " 9", mode_config.words.line_count == 9 and "" or "commentfg" },
+    },
+
+    [CONSTANTS.MODES.Sentences] = {
+      {
+        "  Monkeytype ",
+        mode_config.sentences.dictionary == CONSTANTS.DICTIONARIES.Monkeytype and "exgreen" or "normal",
+      },
+      {
+        " 󰞬  TypeRacer",
+        mode_config.sentences.dictionary == CONSTANTS.DICTIONARIES.TypeRacer and "exgreen" or "normal",
+      },
+      { "_pad_" },
+    },
   }
 
+  local line = headerbtns[mode]
   local lines = { voltui.hpad(line, state.w + 1) }
   voltui.border(lines)
+
   return lines
 end
 
@@ -73,11 +92,15 @@ M.mappings = function()
       { " i ", "visual" },
       { " - Start ", "commentfg" },
 
-      { "                   " },
+      { "  " },
+      { " ENTER ", "visual" },
+      { " - Mode", "commentfg" },
+
+      { "  " },
 
       { " CTRL ", "visual" },
       { " " },
-      { " R ", "visual" },
+      { " r ", "visual" },
       { " - Restart ", "commentfg" },
     },
   }
