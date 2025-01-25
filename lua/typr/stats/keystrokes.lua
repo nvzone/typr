@@ -24,7 +24,7 @@ local keys_accuracy = function()
     return a[2] < b[2]
   end)
 
-  local kblayout = config.kblayout or kblayouts[config.kblayout]
+  local kblayout = kblayouts[config.kblayout] or {}
 
   for i, v in ipairs(kblayout) do
     local row = {}
@@ -71,7 +71,12 @@ local keys_accuracy = function()
     end
   end
 
-  local worst_keys = keys[1][1] .. " " .. keys[2][1] .. " " .. keys[3][1]
+  local worst_keys = ""
+  if #keys >= 3 then
+    worst_keys = keys[1][1] .. " " .. keys[2][1] .. " " .. keys[3][1]
+  else
+    worst_keys = "No Data"
+  end
 
   local indicators = {
     { { "󱓻 ", "commentfg" }, { "100% accuracy!" } },
