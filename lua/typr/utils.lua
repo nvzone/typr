@@ -56,7 +56,7 @@ M.gen_word = function()
   local word
   local frequency = math.random(1, 4)
   local config = state.config.mode_config.words
-  local words = require("typr.dictionaries." .. config.dictionary)
+  local words = require("typr.dictionaries." .. state.config.mode)
 
   if frequency == 4 and state.config.numbers then
     word = tostring(math.random(1, 1000))
@@ -93,15 +93,15 @@ M.words_to_lines = function()
       line_length = line_length + #word + 1 -- +1 for the space
     end
 
-    table.insert(lines, table.concat(line_words, " "))
+    table.insert(lines, table.concat(line_words, " ") .. " ")
   end
 
   return lines
 end
 
 M.gen_sentence = function()
-  local config = state.config.mode_config.sentences
-  local sentences = require("typr.dictionaries." .. config.dictionary)
+  local mode = state.config.mode
+  local sentences = require("typr.dictionaries." .. mode)
   local sentence = sentences[math.random(1, #sentences)]
   return sentence
 end
@@ -115,20 +115,8 @@ M.sentence_to_lines = function()
   local line_length = 0
 
   for _, word in ipairs(vim.split(sentence, "%s", { trimempty = true })) do
-    local word_length = #word
-
-    -- Typr goes to the next line
-    -- 1 character before the end of the line,
-    -- so increasing the word length by 1
-    -- is to make sure there is no
-    -- single character letter placed at the
-    -- end of the line.
-    if word_length == 1 then
-      word_length = word_length + 1
-    end
-
-    if line_length + word_length + 1 >= maxw then
-      table.insert(lines, table.concat(line_words, " "))
+    if line_length + #word + 1 >= maxw then
+      table.insert(lines, table.concat(line_words, " ") .. " ")
       line_words = {}
       line_length = 0
     end
@@ -153,7 +141,11 @@ M.gen_lines = function()
   }
 
   local line_generator = line_gen_mapping[state.config.mode]
-  state.lines = line_generator()
+  local lines = line_generator()
+  local last_line = lines[#lines]
+  lines[#lines] = vim.trim(last_line)
+  state.lines = lines
+
   local ui_lines = {}
 
   for _, v in ipairs(state.lines) do
@@ -347,20 +339,38 @@ M.on_finish = function()
   state.timer:stop()
   vim.cmd.stopinsert()
 
-  M.get_accuracy()
-  M.count_correct_words()
-  M.char_accuracy()
-
   state.h = state.h + 2
   vim.api.nvim_win_set_height(state.win, state.h)
-  M.set_emptylines()
 
-  require("typr").initialize_volt()
-  volt.redraw(state.buf, "all")
+  vim.schedule(function()
+    M.get_accuracy()
+    M.count_correct_words()
+    M.char_accuracy()
+    M.char_times_calc()
 
-  M.char_times_calc()
+    M.set_emptylines()
+    require("typr").initialize_volt()
+    volt.redraw(state.buf, "all")
 
-  require("typr.stats.utils").save()
+    require("typr.stats.utils").save()
+  end)
+end
+
+M.handle_test_end = function()
+  local pos = vim.api.nvim_win_get_cursor(state.win)
+  local curline_endcol = #state.lines[pos[1] - state.words_row]
+  local cur_col = pos[2] - 1
+
+  if cur_col == curline_endcol then
+    if state.words_row_end == pos[1] then
+      M.on_finish()
+      return
+    end
+
+    vim.schedule(function()
+      vim.api.nvim_win_set_cursor(state.win, { pos[1] + 1, state.xpad })
+    end)
+  end
 end
 
 return M

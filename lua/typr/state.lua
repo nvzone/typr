@@ -33,10 +33,6 @@ local M = {
         symbols = false,
         random = false,
         line_count = 1,
-        dictionary = CONSTANTS.DICTIONARIES.Words,
-      },
-      sentences = {
-        dictionary = CONSTANTS.DICTIONARIES.Monkeytype,
       },
     },
     insert_on_start = false,

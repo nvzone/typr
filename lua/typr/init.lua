@@ -110,6 +110,8 @@ M.open = function()
       local cur = vim.uv.hrtime()
       table.insert(state.stats.char_times, { state.lastchar, (cur - lasttime) / 1e6 })
       lasttime = cur
+
+      utils.handle_test_end()
     end,
   })
 

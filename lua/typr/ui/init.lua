@@ -11,7 +11,7 @@ M.headerbtns = function()
   local mode = state.config.mode
   local mode_config = state.config.mode_config
 
-  local headerbtns = {
+  local header_line_map = {
 
     [CONSTANTS.MODES.Words] = {
       { "  Symbols ", mode_config.words.symbols and "exgreen" or "normal" },
@@ -25,19 +25,13 @@ M.headerbtns = function()
     },
 
     [CONSTANTS.MODES.Sentences] = {
-      {
-        "  Monkeytype ",
-        mode_config.sentences.dictionary == CONSTANTS.DICTIONARIES.Monkeytype and "exgreen" or "normal",
-      },
-      {
-        " 󰞬  TypeRacer",
-        mode_config.sentences.dictionary == CONSTANTS.DICTIONARIES.TypeRacer and "exgreen" or "normal",
-      },
+      { "  Refresh Sentence", "normal" },
       { "_pad_" },
     },
   }
 
-  local line = headerbtns[mode]
+  local line = header_line_map[mode]
+
   local lines = { voltui.hpad(line, state.w + 1) }
   voltui.border(lines)
 

@@ -2,7 +2,6 @@ local state = require "typr.state"
 local map = vim.keymap.set
 local api = vim.api
 local typr_api = require "typr.api"
-local utils = require "typr.utils"
 local CONSTANTS = require "typr.constants.consts"
 
 local mode_mappings = {
@@ -20,46 +19,11 @@ local mode_mappings = {
   end,
 
   [CONSTANTS.MODES.Sentences] = function()
-    map("n", "m", function()
-      typr_api.change_dictionary(CONSTANTS.DICTIONARIES.Monkeytype)
-    end, { buffer = state.buf })
-
-    map("n", "t", function()
-      typr_api.change_dictionary(CONSTANTS.DICTIONARIES.TypeRacer)
-    end, { buffer = state.buf })
+    map("n", "r", typr_api.refresh, { buffer = state.buf })
   end,
 }
 
-local function get_data()
-  local pos = vim.api.nvim_win_get_cursor(state.win)
-  local curline_end = #state.lines[pos[1] - state.words_row]
-  return pos, curline_end
-end
-
 return function()
-  map("i", "<Space>", function()
-    local pos, curline_end = get_data()
-
-    if pos[2] >= curline_end then
-      if state.words_row_end == pos[1] then
-        utils.on_finish()
-        return
-      end
-
-      api.nvim_win_set_cursor(state.win, { pos[1] + 1, state.xpad })
-    else
-      api.nvim_feedkeys(" ", "n", true)
-    end
-  end, { buffer = state.buf })
-
-  map("i", "<Enter>", function()
-    local pos, curline_end = get_data()
-
-    if pos[2] >= curline_end and state.words_row_end == pos[1] then
-      utils.on_finish()
-    end
-  end, { buffer = state.buf })
-
   map("n", "i", function()
     api.nvim_win_set_cursor(state.win, { state.words_row + 1, state.xpad })
     vim.cmd.startinsert()
@@ -81,6 +45,8 @@ return function()
   for _, key in ipairs { "o", "a", "I", "A" } do
     map("n", key, "", { buffer = state.buf })
   end
+
+  map("i", "<Enter>", "", { buffer = state.buf })
 
   if state.config.mappings then
     state.config.mappings(state.buf)
