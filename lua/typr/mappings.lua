@@ -24,6 +24,17 @@ local mode_mappings = {
 }
 
 return function()
+  local disabled_keys = {
+    n = { "o", "a", "d", "x", "I", "A" },
+    i = { "<Enter>", "<Del>" },
+  }
+
+  for mode, keys in pairs(disabled_keys) do
+    for _, key in ipairs(keys) do
+      map(mode, key, "", { buffer = state.buf })
+    end
+  end
+
   map("n", "i", function()
     api.nvim_win_set_cursor(state.win, { state.words_row + 1, state.xpad })
     vim.cmd.startinsert()
@@ -39,18 +50,11 @@ return function()
     typr_api.restart()
   end, { buffer = state.buf })
 
-  local mode_mapping_func = mode_mappings[state.config.mode]
-  mode_mapping_func()
-
-  for _, key in ipairs { "o", "a", "I", "A" } do
-    map("n", key, "", { buffer = state.buf })
-  end
-
-  for _, key in ipairs { "<Enter>", "<Del>" } do
-    map("i", key, "", { buffer = state.buf })
-  end
-
   map("i", "<BS>", function()
+    if state.config.no_backspace then
+      return
+    end
+
     local _, column = unpack(vim.api.nvim_win_get_cursor(state.win))
     if column <= state.xpad then
       return
@@ -59,6 +63,9 @@ return function()
     local backspace = vim.api.nvim_replace_termcodes("<BS>", true, false, true)
     vim.api.nvim_feedkeys(backspace, "n", false)
   end, { buffer = state.buf })
+
+  local mode_mapping_func = mode_mappings[state.config.mode]
+  mode_mapping_func()
 
   if state.config.mappings then
     state.config.mappings(state.buf)

@@ -27,6 +27,7 @@ local M = {
     kblayout = "qwerty",
     wpm_goal = 120,
     mode = CONSTANTS.MODES.Words,
+    no_backspace = false,
     mode_config = {
       words = {
         numbers = false,

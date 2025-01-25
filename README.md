@@ -23,7 +23,7 @@ A Neovim plugin for practice typing with a very beautiful dashboard.
 
 ## Config
 
-[Default config](https://github.com/nvzone/typr/blob/main/lua/typr/state.lua#L18).
+[Default config](./lua/typr/state.lua#L24).
 
 ### Disable auto pairing and completion
 
