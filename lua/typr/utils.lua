@@ -290,20 +290,38 @@ M.on_finish = function()
   state.timer:stop()
   vim.cmd.stopinsert()
 
-  M.get_accuracy()
-  M.count_correct_words()
-  M.char_accuracy()
-
   state.h = state.h + 2
   vim.api.nvim_win_set_height(state.win, state.h)
-  M.set_emptylines()
 
-  require("typr").initialize_volt()
-  volt.redraw(state.buf, "all")
+  vim.schedule(function()
+    M.get_accuracy()
+    M.count_correct_words()
+    M.char_accuracy()
+    M.char_times_calc()
 
-  M.char_times_calc()
+    M.set_emptylines()
+    require("typr").initialize_volt()
+    volt.redraw(state.buf, "all")
 
-  require("typr.stats.utils").save()
+    require("typr.stats.utils").save()
+  end)
+end
+
+M.handle_test_end = function()
+  local pos = vim.api.nvim_win_get_cursor(state.win)
+  local curline_endcol = #state.default_lines[pos[1] - state.words_row]
+  local cur_col = pos[2] - 1
+
+  if cur_col == curline_endcol then
+    if state.words_row_end == pos[1] then
+      M.on_finish()
+      return
+    end
+
+    vim.schedule(function()
+      vim.api.nvim_win_set_cursor(state.win, { pos[1] + 1, state.xpad })
+    end)
+  end
 end
 
 return M
