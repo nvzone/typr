@@ -2,7 +2,6 @@ local state = require "typr.state"
 local map = vim.keymap.set
 local api = vim.api
 local myapi = require "typr.api"
-local utils = require "typr.utils"
 
 return function()
   map("n", "i", function()
@@ -26,6 +25,7 @@ return function()
   end
 
   map("n", "o", "", { buffer = state.buf })
+  map("i", "<cr>", "", { buffer = state.buf })
 
   if state.config.mappings then
     state.config.mappings(state.buf)
