@@ -16,7 +16,7 @@ local tabular_stats = function()
   local w2 = 29
 
   local goalTb = {
-    { { { "  WPM GOAL ~ " .. config.wpm_goal,  "normal" } } },
+    { { { "  WPM GOAL ~ " .. config.wpm_goal, "normal" } } },
   }
 
   for i, _ in ipairs(tb) do
