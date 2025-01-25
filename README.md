@@ -6,9 +6,9 @@ A Neovim plugin for practice typing with a very beautiful dashboard.
 ![typrstats](https://github.com/user-attachments/assets/b1653de3-05f3-4b90-b35e-9341eed8bf3e)
 ![typrstats vertical](https://github.com/user-attachments/assets/1ca824a0-5227-48c4-991c-f793cf62074a)
 
-# Install
+## Install
 
-- Users which used typr before, delete your previous typrstats file.
+- Users which used Typr before, delete your previous typrstats file.
 
 ```lua
 {
@@ -21,28 +21,55 @@ A Neovim plugin for practice typing with a very beautiful dashboard.
 
 - Note: Activity UI is still WIP so dont expect it to work.
 
-# Config
+## Config
 
-https://github.com/nvzone/typr/blob/main/lua/typr/state.lua#L18
+[Default config](https://github.com/nvzone/typr/blob/main/lua/typr/state.lua#L18).
 
-## Disable completion
+### Disable auto pairing and completion
 
-The typr buffer has the filetype set to `typr`. Refer to your completion plugins documentation on
-how to disable it for that filetype which you can read using the buffer-scoped option
-`vim.bo.filetype`.
+The Typr buffer has the file type set to `typr`. Refer to your completion
+and auto-pairing plugins documentation on how to disable it for that
+file type which you can read using the buffer-scoped option `vim.bo.filetype`.
 
-# Mappings
+#### [blink.cmp](https://github.com/Saghen/blink.cmp)
 
-Whatever buttons you see, the mapping starts from their first letter i.e
+```lua
+{
+  "Saghen/blink.cmp",
+  opts = {
+    enabled = function()
+      return not vim.tbl_contains({ "typr" }, vim.bo.filetype)
+        and vim.bo.buftype ~= "prompt"
+        and vim.b.completion ~= false
+    end,
+  },
+}
+```
 
-In Typr window
+#### [nvim-autopairs](https://github.com/windwp/nvim-autopairs)
+
+```lua
+{
+  "windwp/nvim-autopairs",
+  event = "InsertEnter",
+  opts = {
+    disable_filetype = { "TelescopePrompt", "spectre_panel", "typr" },
+  },
+}
+```
+
+## Mappings
+
+Whatever buttons you see, the mapping starts from their first letter i.e.
+
+In Typr window:
 
 - s = toggle symbols
 - n = toggle numbers
 - r = toggle random
-- 3 = set 3 lines , and so on!
+- 3 = set 3 lines, and so on!
 
-In Typrstats vertical window
+In TyprStats vertical window:
 
 - D = dashboard
 - H = history
