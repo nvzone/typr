@@ -46,7 +46,19 @@ return function()
     map("n", key, "", { buffer = state.buf })
   end
 
-  map("i", "<Enter>", "", { buffer = state.buf })
+  for _, key in ipairs { "<Enter>", "<Del>" } do
+    map("i", key, "", { buffer = state.buf })
+  end
+
+  map("i", "<BS>", function()
+    local _, column = unpack(vim.api.nvim_win_get_cursor(state.win))
+    if column <= state.xpad then
+      return
+    end
+
+    local backspace = vim.api.nvim_replace_termcodes("<BS>", true, false, true)
+    vim.api.nvim_feedkeys(backspace, "n", false)
+  end, { buffer = state.buf })
 
   if state.config.mappings then
     state.config.mappings(state.buf)
