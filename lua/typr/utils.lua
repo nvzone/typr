@@ -124,7 +124,9 @@ M.gen_lines_diff = function(line, userline)
 
     local resultlen = #result
 
-    if expected ~= char and expected == " " then
+    if expected ~= char and char ~= " " then
+      expected = char
+    elseif expected ~= char and expected == " " then
       expected = "x"
     end
 
