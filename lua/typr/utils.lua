@@ -1,6 +1,7 @@
 local M = {}
 local state = require "typr.state"
 local words = require "typr.constants.words"
+local phrases = require "typr.constants.phrases"
 local volt = require "volt"
 
 local symbols = {
@@ -56,11 +57,12 @@ M.gen_word = function()
   local word
   local frequency = math.random(1, 4)
   local config = state.config
+  local wordslen = #words
 
   if frequency == 4 and state.config.numbers then
     word = tostring(math.random(1, 1000))
   else
-    word = config.random and gen_random_word() or words[math.random(1, #words)]
+    word = config.random and gen_random_word() or words[math.random(1, wordslen)]
   end
 
   if state.config.symbols then
@@ -95,8 +97,40 @@ M.words_to_lines = function()
   return lines
 end
 
+M.phrases_to_lines = function()
+  local data = state.config.phrases or phrases
+  local maxw = state.w_with_pad
+  local datalen = #data
+  local phrase = data[math.random(1, datalen)]
+  local lines = { "" }
+
+  while state.linecount >= #lines do
+    for _, v in ipairs(vim.split(phrase, " ")) do
+      local arrlen = #lines
+      local lastline_len = #lines[arrlen]
+
+      if lastline_len + #v + 1 > maxw then
+        table.insert(lines, v)
+      else
+        local space = lastline_len == 0 and "" or " "
+        lines[arrlen] = lines[arrlen] .. space .. v
+      end
+    end
+
+    phrase = data[math.random(1, datalen)]
+  end
+
+  return vim.list_slice(lines, 1, state.linecount)
+end
+
+M.mode_funcs = {
+  words = M.words_to_lines,
+  phrases = M.phrases_to_lines,
+}
+
 M.gen_default_lines = function()
-  state.default_lines = M.words_to_lines()
+  state.default_lines = M.mode_funcs[state.config.mode]()
+
   local ui_lines = {}
 
   for _, v in ipairs(state.default_lines) do
