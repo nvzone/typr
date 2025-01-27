@@ -78,7 +78,7 @@ M.words_to_lines = function()
   local lines = {}
   local maxw = state.w_with_pad
 
-  for _ = 1, state.linecount do
+  for i = 1, state.linecount do
     local lineWords = {}
     local lineLength = 0
 
@@ -91,7 +91,11 @@ M.words_to_lines = function()
       lineLength = lineLength + #word + 1 -- +1 for the space
     end
 
-    table.insert(lines, table.concat(lineWords, " "))
+    local str = table.concat(lineWords, " ")
+    if i < state.linecount then
+      str = str .. " "
+    end
+    table.insert(lines, str)
   end
 
   return lines
