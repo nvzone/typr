@@ -15,6 +15,7 @@ M.headerbtns = function()
     { "   Random ", config.random and "exgreen" or "normal" },
     { "_pad_" },
     { "  Lines ", "exred" },
+    { " 1 *", state.linecount == 1 and "" or "commentfg" },
     { " 3 *", state.linecount == 3 and "" or "commentfg" },
     { " 6 *", state.linecount == 6 and "" or "commentfg" },
     { " 9", state.linecount == 9 and "" or "commentfg" },
