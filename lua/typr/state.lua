@@ -3,7 +3,7 @@ local M = {
   xpad = 2,
   w = 80,
   h = 20,
-  linecount = 1,
+  linecount = 2,
   default_lines = {},
   ui_lines = {},
   lastchar = nil,
@@ -21,12 +21,14 @@ local M = {
 
   ----------------------- user config -----------------------
   config = {
+    mode = "words", -- words, phrases
     winlayout = "responsive",
     kblayout = "qwerty",
     wpm_goal = 120,
     numbers = false,
     symbols = false,
     random = false,
+    phrases = nil, -- can be a table of strings
     insert_on_start = false,
     stats_filepath = vim.fn.stdpath "data" .. "/typrstats",
     mappings = nil,

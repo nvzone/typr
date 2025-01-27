@@ -3,25 +3,38 @@ local volt = require "volt"
 local state = require "typr.state"
 local utils = require "typr.utils"
 
-M.toggle_symbols = function()
-  state.config.symbols = not state.config.symbols
+M.redraw_words_header = function(mode)
+  state.config.mode = mode or "words"
   volt.redraw(state.buf, "headerbtns")
   utils.gen_default_lines()
   volt.redraw(state.buf, "words")
+end
+
+M.toggle_symbols = function()
+  state.config.symbols = not state.config.symbols
+  M.redraw_words_header()
 end
 
 M.toggle_numbers = function()
   state.config.numbers = not state.config.numbers
-  volt.redraw(state.buf, "headerbtns")
-  utils.gen_default_lines()
-  volt.redraw(state.buf, "words")
+  M.redraw_words_header()
 end
 
 M.toggle_random = function()
   state.config.random = not state.config.random
-  volt.redraw(state.buf, "headerbtns")
-  utils.gen_default_lines()
-  volt.redraw(state.buf, "words")
+  M.redraw_words_header()
+end
+
+M.toggle_phrases = function()
+  state.config.mode = state.config.mode == "phrases" and "words" or "phrases"
+
+  if state.config.mode == "phrases" then
+    state.config.numbers = false
+    state.config.symbols = false
+    state.config.random = false
+  end
+
+  M.redraw_words_header(state.config.mode)
 end
 
 M.set_linecount = function(x)
@@ -38,7 +51,7 @@ M.set_linecount = function(x)
 end
 
 M.restart = function()
-  if state.stats.wpm == 0 then
+  if state.stats.rawpm == 0 then
     return
   end
 

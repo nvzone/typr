@@ -13,9 +13,10 @@ M.headerbtns = function()
     { "  Symbols ", config.symbols and "exgreen" or "normal" },
     { "   Numbers ", config.numbers and "exgreen" or "normal" },
     { "   Random ", config.random and "exgreen" or "normal" },
+    { "   Phrases ", config.mode == "phrases" and "exgreen" or "normal" },
     { "_pad_" },
-    { "  Lines ", "exred" },
-    { " 1 *", state.linecount == 1 and "" or "commentfg" },
+    { "Lines ", "exred" },
+    { "Lines ", "exred" },
     { " 3 *", state.linecount == 3 and "" or "commentfg" },
     { " 6 *", state.linecount == 6 and "" or "commentfg" },
     { " 9", state.linecount == 9 and "" or "commentfg" },
@@ -33,7 +34,7 @@ M.stats = function()
     return { {}, {} }
   end
 
-  if stats.wpm == 0 then
+  if stats.rawpm == 0 then
     return {
       { { string.rep(" ", (state.w_with_pad / 2) - 3) }, { "  " .. state.secs .. "s  " } },
     }
