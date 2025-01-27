@@ -51,7 +51,7 @@ M.set_linecount = function(x)
 end
 
 M.restart = function()
-  if state.stats.wpm == 0 then
+  if state.stats.rawpm == 0 then
     return
   end
 

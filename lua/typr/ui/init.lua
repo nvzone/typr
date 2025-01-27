@@ -33,7 +33,7 @@ M.stats = function()
     return { {}, {} }
   end
 
-  if stats.wpm == 0 then
+  if stats.rawpm == 0 then
     return {
       { { string.rep(" ", (state.w_with_pad / 2) - 3) }, { "  " .. state.secs .. "s  " } },
     }

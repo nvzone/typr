@@ -21,7 +21,7 @@ local M = {
 
   ----------------------- user config -----------------------
   config = {
-    mode = "phrases", -- words, phrases
+    mode = "words", -- words, phrases
     winlayout = "responsive",
     kblayout = "qwerty",
     wpm_goal = 120,
