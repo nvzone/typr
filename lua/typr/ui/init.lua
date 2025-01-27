@@ -13,6 +13,7 @@ M.headerbtns = function()
     { "  Symbols ", config.symbols and "exgreen" or "normal" },
     { "   Numbers ", config.numbers and "exgreen" or "normal" },
     { "   Random ", config.random and "exgreen" or "normal" },
+    { "   Phrases ", config.mode == "phrases" and "exgreen" or "normal" },
     { "_pad_" },
     { "Lines ", "exred" },
     { " 1 *", state.linecount == 1 and "" or "commentfg" },
