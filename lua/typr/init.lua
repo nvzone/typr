@@ -80,7 +80,8 @@ M.open = function()
   }
 
   vim.bo[state.buf].filetype = "typr"
-  vim.bo[state.buf].ma = true
+  vim.wo[state.win].wrap = true
+  vim.wo[state.buf].sidescrolloff = 0
   vim.wo[state.win].virtualedit = "all"
 
   api.nvim_win_set_cursor(state.win, { state.words_row + 1, state.xpad })
