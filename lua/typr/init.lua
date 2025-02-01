@@ -81,6 +81,7 @@ M.open = function()
 
   vim.bo[state.buf].filetype = "typr"
   vim.bo[state.buf].ma = true
+  vim.b[state.buf].minipairs_disable = true
   vim.wo[state.win].wrap = true
   vim.wo[state.win].sidescrolloff = 0
   vim.wo[state.win].virtualedit = "all"
