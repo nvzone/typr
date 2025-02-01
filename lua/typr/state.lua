@@ -32,10 +32,15 @@ local M = {
     insert_on_start = false,
     stats_filepath = vim.fn.stdpath "data" .. "/typrstats",
     mappings = nil,
-    -- or function(buf)   end
+    -- or function(buf) end
     -- mappings = function(buf)
     --  vim.keymap.set("n", "a, anything, { buffer = buf })
-    -- end
+    -- end,
+    on_attach = nil,
+    -- or function(buf) end
+    -- on_attach = function(buf)
+    --  vim.b[buf].minipairs_disable = true
+    -- end,
   },
 
   -- for stats

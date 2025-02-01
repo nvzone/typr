@@ -81,7 +81,6 @@ M.open = function()
 
   vim.bo[state.buf].filetype = "typr"
   vim.bo[state.buf].ma = true
-  vim.b[state.buf].minipairs_disable = true
   vim.wo[state.win].wrap = true
   vim.wo[state.win].sidescrolloff = 0
   vim.wo[state.win].virtualedit = "all"
@@ -123,6 +122,10 @@ M.open = function()
   pcall(function()
     require("cmp").setup.buffer { enabled = false }
   end)
+
+  if type(state.config.on_attach) == "function" then
+    state.config.on_attach(state.buf)
+  end
 end
 
 return M
