@@ -57,6 +57,8 @@ M.open = function()
     zindex = 100,
   })
 
+  local open_windows = { state.win, dim_win }
+
   api.nvim_win_set_hl_ns(state.win, state.ns)
 
   api.nvim_set_hl(state.ns, "FloatBorder", { link = "typrborder" })
@@ -80,6 +82,11 @@ M.open = function()
     winclosed_event = true,
     after_close = function()
       state.reset_vars()
+      for _, win in ipairs(open_windows) do
+        if api.nvim_win_is_valid(win) then
+          api.nvim_win_close(win, true)
+        end
+      end
     end,
   }
 
