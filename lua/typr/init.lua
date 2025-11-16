@@ -38,7 +38,12 @@ M.open = function()
     border = "none",
   })
 
-  vim.wo[dim_win].winblend = 20
+  if state.config.transparent_background then
+    vim.wo[dim_win].winblend = 100
+  else
+    vim.wo[dim_win].winblend = 20
+  end
+
 
   utils.gen_default_lines()
 

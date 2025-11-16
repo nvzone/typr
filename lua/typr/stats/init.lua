@@ -30,7 +30,11 @@ M.open = function()
     border = "none",
   })
 
-  vim.wo[dim_win].winblend = 20
+  if state.config.transparent_background then
+    vim.wo[dim_win].winblend = 100
+  else
+    vim.wo[dim_win].winblend = 20
+  end
 
   require("typr.stats.utils").init_volt()
   state.h = voltstate[state.statsbuf].h

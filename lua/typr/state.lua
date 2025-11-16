@@ -30,6 +30,7 @@ local M = {
     random = false,
     phrases = nil, -- can be a table of strings
     insert_on_start = false,
+    transparent_background = false,
     stats_filepath = vim.fn.stdpath "data" .. "/typrstats",
     mappings = nil,
     -- or function(buf) end
